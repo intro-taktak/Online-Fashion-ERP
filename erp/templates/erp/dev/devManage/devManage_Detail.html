@@ -1,0 +1,214 @@
+{% extends 'base/base.html' %} {% block content %}
+<style>
+    input[readonly] {background-color:white !important;}
+    .progress {
+        position:relative;
+    }
+    .progress span {
+        position:absolute;
+        left:0;
+        width:100%;
+        text-align:center;
+        z-index:2;
+        color:white;
+        margin-top: 7px;
+    }
+</style>
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom"
+    >
+        <h2 class="h5">
+            {{program.title}}
+        </h2>
+        
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a
+                    class="btn btn-sm btn-outline-secondary"
+                    href="devManage/write?menu={{menu}}"
+                    data-toggle="modal" 
+                    data-target="#manual_view"
+                >
+                    <i class="fas fa-book"></i> 메뉴얼
+                </a>
+                <a class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#check_in">
+                    <span data-feather="user-check"></span> 체크인
+                </a>
+                <a class="btn btn-sm btn-outline-secondary" href="/devManage/update/{{program.id}}?menu={{menu}}">
+                    <span data-feather="user-check"></span> 수정
+                </a>
+                <button class="btn btn-sm btn-outline-secondary" onclick="f_delete();">
+                    <span data-feather="edit"></span> 삭제
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="alert alert-warning" role="alert">
+      <table class="table table-borderless">
+      <thead>
+        <tr>
+          <th scope="col">카테고리</th>
+          <th scope="col">URL</th>
+          <th scope="col">등록일</th>
+          <th scope="col">작성자</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ program.category }}</td>
+          <td><a href="/{{program.url}}?menu={{menu}}">{{ program.url }}</a></td>
+          <td>{{ program.created_at | date }}</td>
+          <td>{{ program.writer }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <span class="progress" style="background-color: lightgray">
+                            <div 
+                                class="progress-bar 
+                                      {%if program.progress == '개발진행' %}bg-primary{%endif%} 
+                                      {%if program.progress == '기획완료' %}bg-dark{%endif%} 
+                                      {%if program.progress == '개발완료' %}bg-success{%endif%} 
+                                      {%if program.progress == '유지보수' %}bg-danger{%endif%} 
+                                      progress-bar-striped 
+                                      progress-bar-animated" 
+                                style="width: {% if program.progress == '기획완료' %}100{% elif program.progress == '개발진행' %}60{% else %}100{%endif%}%;"
+                                aria-valuemax="100">
+
+                            </div>
+                            <span class="d-none d-lg-block">{{program.progress}}</span>
+                            <span class="d-block d-md-block d-lg-none">
+                                {%if program.progress == '기획완료' %}기획{%endif%} 
+                                {%if program.progress == '개발진행' %}개발{%endif%} 
+                                {%if program.progress == '개발완료' %}완료{%endif%} 
+                                {%if program.progress == '유지보수' %}보수{%endif%}   
+                            </span>
+                        </span>
+    </div><br>
+    <div class="card card-body" style="padding:5%;">
+        {{ program.content | safe }}
+    </div>
+    {% if files %}
+    <br>
+        <h5>첨부파일 <span class="badge badge-pill badge-primary">{{files.count}}</span></h5>
+        <div class="card card-body">
+    {% for i in files %}
+            <a href="{{i.file.url}}"><b>{{ i.file.name }}</b> {{ i.file.size }} bytes</a>      
+    {% endfor %}
+            </div>
+    {% endif %}
+    <br>
+    {% if check_ins %}
+    <div style="">
+        <h5>
+        히스토리 <span class="badge badge-pill badge-primary">{{check_ins.count}}</span>
+        </h5>
+        
+        
+       {% for i in check_ins %} 
+        <div class="list-group">
+          <a href="#" class="list-group-item list-group-item-action" 
+             onclick="check_in_modal_open({{i.id}})" 
+             data-toggle="modal" data-target="#check_in_view">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1"><i class="fas fa-info-circle"></i> {{i.title}}</h5>
+              <small class="text-muted">{{i.created_at | date}}</small>
+            </div>
+            <p class="mb-1" id="badge_area">
+              
+            <span class="badge badge-pill 
+                                      {%if i.progress == '개발진행' %}badge-primary{%endif%} 
+                                      {%if i.progress == '기획완료' %}badge-dark{%endif%} 
+                                      {%if i.progress == '개발완료' %}badge-success{%endif%} 
+                                      {%if i.progress == '유지보수' %}badge-danger{%endif%} 
+                            ">{{i.progress}}</span>  
+                {% if "bug" in i.tag %}<span class="badge badge-pill badge-danger">버그</span>{% endif %}
+                {% if "suggestion" in i.tag %}<span class="badge badge-pill badge-info">제안</span>{% endif %}
+                {% if "testing" in i.tag %}<span class="badge badge-pill badge-warning">테스트</span>{% endif %}
+                {% if "dev" in i.tag %}<span class="badge badge-pill badge-success">개발</span>{% endif %}
+                {% if "highp" in i.tag %}<span class="badge badge-pill badge-danger">긴급</span>{% endif %}
+                {% if "question" in i.tag %}<span class="badge badge-pill badge-primary">질문</span>{% endif %}
+              
+              
+              
+            </p>
+            <small class="text-muted">#{{i.id}} {{i.writer}}</small>
+          </a>
+        </div>
+        {% endfor %}
+        {% include 'modal/devManage_check_in_view.html'%}
+    </div>
+    {% endif %}
+    
+    {% include 'modal/manual_view.html' %}
+    {% include 'modal/devManage_check_in.html' %}
+    
+</main>
+<br />
+<br />
+<script>
+    /* Init Icon */
+    feather.replace();
+    
+    function f_delete() {
+        location.href="/devManage/delete?pid={{program.id}},";
+    }
+
+    function check_in_modal_open(id){
+        {% if check_ins %}
+            document.getElementById('check_in_file').innerHTML = ``;
+            document.getElementById('check_in_file_count').innerHTML = ``;
+         
+            let a_json = [
+                {% for i in check_in_files %}
+                {
+                    'p_id':'{{i.p_id}}',
+                    'url':'{{i.file.url}}',
+                    'name': '{{i.file.name}}'
+                }, 
+                {% endfor %}        
+            ];
+
+            var check_ins = [
+                {% for j in check_ins %}
+                {
+                    'id': '{{j.id}}',
+                    'title': `{{j.title}}`,
+                    'writer': '{{j.writer}}',
+                    'content': `
+                                    {{j.content | safe }}
+                                `,
+                    'created_at': '{{j.created_at}}',
+                    'progress': '{{j.progress}}',
+                    'tag': '{{j.tag}}',
+                },
+                {% endfor %}
+            ];
+         
+            for(let i=0; i<a_json.length; i++){
+                if(a_json[i]['p_id'] == id){
+                    document.getElementById('check_in_file').innerHTML += `<a href='${a_json[i]['url']}'>${a_json[i]['name']}</a>`;
+                    document.getElementById('check_in_file_count').innerHTML = i+1;
+                }
+            }
+        {% endif %}
+         
+        for(let k=0; k<check_ins.length; k++){
+            if(check_ins[k].id == id){
+                document.getElementById('check_in_Modal_Label').innerHTML = check_ins[k].title;
+                document.getElementById('check_in_badge_area').innerHTML = document.getElementById('badge_area').innerHTML;;
+                document.getElementById('check_in_body').innerHTML = check_ins[k].content;;
+                document.getElementById('check_in_view_type').innerHTML = check_ins[k].progress;;
+                document.getElementById('check_in_view_title').innerHTML = check_ins[k].title;;
+                document.getElementById('check_in_view_created_at').innerHTML = check_ins[k].created_at;;
+                document.getElementById('check_in_view_writer').innerHTML = check_ins[k].writer;;
+        
+            }
+        }
+        
+        
+    }
+
+</script>
+{% endblock %}

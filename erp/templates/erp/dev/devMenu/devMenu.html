@@ -1,0 +1,295 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+
+
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">   
+        <h1 class="h4">메뉴관리
+                <abbr title="메뉴얼"><i class="bi bi-question-circle h6"></i></abbr>
+        </h1>
+        
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <button
+                    class="btn btn-sm btn-outline-secondary"
+                    onclick="init_tree(1)"
+                >
+                    <span data-feather="delete"></span> 작업취소
+                </button>
+                <button
+                    class="btn btn-sm btn-outline-secondary"
+                    onclick="refresh()"
+                >
+                    <span data-feather="refresh-ccw"></span> 초기화
+                </button>
+                
+            </div>
+            
+            <button
+                    class="btn btn-sm btn-outline-secondary"
+                    onclick="save();"
+                >
+                    <span data-feather="save"></span> 저장
+                </button>
+
+            
+            
+        </div>
+    </div>
+    <input class="form-control" id="myInput" type="text" placeholder="Search.." />
+    <br />
+    <div id="jstree"></div>
+    <br>
+</main>
+<br>
+<script>
+    /* Init Icon */   
+    feather.replace();
+    
+    const default_menus = [
+        { "id": "0", "parent": "#", "text": "패션유통" },
+        { "id": "1", "parent": "#", "text": "일반유통" },
+        { "id": "2", "parent": "#", "text": "온라인유통" },
+        { "id": "3", "parent": "#", "text": "그룹웨어" },
+        { "id": "4", "parent": "#", "text": "경리회계" },
+        { "id": "5", "parent": "#", "text": "쇼핑몰" },
+        { "id": "6", "parent": "#", "text": "메신저" },
+        { "id": "7", "parent": "#", "text": "개발관리" },
+        { "id": "8", "parent": "0", "text": "기획" },
+        { "id": "9", "parent": "0", "text": "발주/입고" },
+        { "id": "10", "parent": "0", "text": "출고의뢰" },
+        { "id": "11", "parent": "0", "text": "물류/출고" },
+        { "id": "12", "parent": "0", "text": "포스판매" },
+        { "id": "13", "parent": "0", "text": "정산/입금" },
+        { "id": "14", "parent": "0", "text": "기초관리" },
+        { "id": "15", "parent": "1", "text": "기획" },
+        { "id": "16", "parent": "1", "text": "발주/입고" },
+        { "id": "17", "parent": "1", "text": "주문/수주" },
+        { "id": "18", "parent": "1", "text": "출고/판매" },
+        { "id": "19", "parent": "1", "text": "정산/입금" },
+        { "id": "20", "parent": "2", "text": "기획" },
+        { "id": "21", "parent": "2", "text": "발주/입고" },
+        { "id": "22", "parent": "2", "text": "몰/상품등록" },
+        { "id": "23", "parent": "2", "text": "주문/출고의뢰" },
+        { "id": "24", "parent": "2", "text": "물류/배송" },
+        { "id": "25", "parent": "2", "text": "정산/입금" },
+        { "id": "26", "parent": "2", "text": "기초관리" },
+        { "id": "27", "parent": "3", "text": "공지사항" },
+        { "id": "28", "parent": "3", "text": "메일" },
+        { "id": "29", "parent": "3", "text": "결재" },
+        { "id": "30", "parent": "3", "text": "근태" },
+        { "id": "31", "parent": "3", "text": "업무/일정" },
+        { "id": "32", "parent": "3", "text": "게시판" },
+        { "id": "33", "parent": "3", "text": "명함" },
+        { "id": "34", "parent": "3", "text": "클라우드" },
+        { "id": "35", "parent": "3", "text": "부가서비스" },
+        { "id": "36", "parent": "4", "text": "회계프로그램" },
+        { "id": "37", "parent": "4", "text": "회계프로그램2" },
+        { "id": "38", "parent": "5", "text": "쇼핑몰프로그램" },
+        { "id": "39", "parent": "5", "text": "쇼핑몰연동정보" },
+        { "id": "40", "parent": "5", "text": "쇼핑몰정산관리" },
+        { "id": "41", "parent": "6", "text": "메신저" },
+        { "id": "42", "parent": "7", "text": "개발자메뉴" },
+    ]
+    
+    var org_menus = [
+        {% for t in menus %}
+        {
+            "id": "{{ t.m_id }}",
+            "parent": "{% if t.parent == '#' %}{{ t.parent }}{% else %}{{ t.parent }}{% endif %}",
+            "text": "{{ t.menu_name }}"
+        },
+        {% endfor %}
+    ]
+    
+    console.log(org_menus);
+    
+    init_tree(0, org_menus);
+    
+    $('#jstree').on('delete_node.jstree', function (e, data) {
+        if(data.parent == '#'){
+            document.getElementById('t-message').innerHTML = '조직(최상위)은 삭제가 불가능합니다.';
+            $('.toast').toast('show');
+            $('#jstree').jstree().refresh();
+        }
+      }).jstree();
+    
+    
+    // console.log(org_menus);
+    
+    var to = false;
+      $('#myInput').keyup(function () {
+        if(to) { clearTimeout(to); }
+        to = setTimeout(function () {
+          var v = $('#myInput').val();
+          $('#jstree').jstree(true).search(v);
+        }, 250);
+      });
+    
+    function refresh(){
+        $('#jstree').jstree(true).destroy();
+        $('#jstree').jstree({
+          "core" : {
+            "animation" : 0,
+            "check_callback" : true,
+            "themes" : { "stripes" : true, 'icons': false },
+            'data' : default_menus,
+            'multiple':false
+          },
+          "types" : {
+            "#" : {
+              "max_children" : 1,
+              "max_depth" : 4,
+              "valid_children" : ["root"]
+            },
+            "root" : {
+              "valid_children" : ["default"],
+              "delete" : false
+            },
+            "default" : {
+              "valid_children" : ["default","file"]
+            },
+          },
+            "checkbox" : {
+              "keep_selected_style" : false
+            },
+          "plugins" : [
+            "contextmenu", "dnd", "search",
+            "state", "types", "wholerow"
+          ]
+        });
+        
+        document.getElementById('t-message').innerHTML = '메뉴를 초기화했습니다. <br>저장 버튼을 누르기 전까지 저장되지 않습니다.';
+        $('.toast').toast('show');
+        console.log(org_menus);
+    }
+    
+    function init_tree(flag){
+        $('#jstree').jstree({
+          "core" : {
+            "animation" : 0,
+            "check_callback" : true,
+            "themes" : { "stripes" : true, 'icons': false },
+            'data' : org_menus,
+              'multiple':false
+          },
+          "types" : {
+            "#" : {
+              "icon":"",
+              "max_children" : 1,
+              "max_depth" : 3,
+              "valid_children" : ["root"],
+            },
+            "root" : {
+              "icon" : "false",
+              "valid_children" : ["default"],
+              "delete" : false
+            },
+            "default" : {
+              "valid_children" : ["default","file"]
+            },
+            "file" : {
+              "icon" : "glyphicon glyphicon-file",
+              "valid_children" : []
+            }
+          },
+            "checkbox" : {
+              "keep_selected_style" : false
+            },
+          "plugins" : [
+            "contextmenu", "dnd", "search",
+            "state", "types", "wholerow"
+          ]
+        });
+        $('#jstree').jstree().refresh();
+        
+        if(flag == 1){
+            window.location.reload();
+            document.getElementById('t-message').innerHTML = '수정사항을 취소했습니다. <br>저장 버튼을 누르기 전까지 저장되지 않습니다.';
+            $('.toast').toast('show');  
+        }
+    }
+
+    function save(){
+        $('#jstree').jstree(true).deselect_all();
+        document.getElementById('t-message').innerHTML = '메뉴를 저장하였습니다.';
+        $('.toast').toast('show');
+        
+        var list = $('#jstree').jstree(true).get_json("#", {});
+        var jsonData = new Array();
+        // console.log(list);
+        
+        var form = document.createElement("form");
+        form.setAttribute("method", "post"); // Get 또는 Post 입력
+        form.setAttribute("action", "/devMenu");
+        document.body.appendChild(form);
+        var hiddenField = document.createElement("input");
+        hiddenField.setAttribute("type", "hidden");
+        
+        for (let i = 0; i < list.length; i++) {
+            let data = new Object();
+            data.m_id = list[i].id;
+            data.parent = '#'
+            data.parent_url = '-1'
+            data.menu_name = list[i].text;
+            jsonData.push(data);
+            
+            for (let j = 0; j < list[i]['children'].length; j++) {
+                let data = new Object();
+                data.m_id = list[i]['children'][j].id;
+                data.parent = i;
+                switch(list[i].text){     
+                    case '패션유통':
+                        data.parent_url = 'fashion';
+                        break;
+                    case '일반유통':
+                        data.parent_url = 'general';
+                        break;
+                    case '온라인유통':
+                        data.parent_url = 'online';
+                        break;
+                    case '그룹웨어':
+                        data.parent_url = 'gw';
+                        break;
+                    case '경리회계':
+                        data.parent_url = 'accounting';
+                        break;
+                    case '쇼핑몰':
+                        data.parent_url = 'shoppingmall';
+                        break;
+                    case '메신저':
+                        data.parent_url = 'messenger';
+                        break;
+                    case '개발관리':
+                        data.parent_url = 'dev';
+                        break;
+                }
+                
+                data.menu_name = list[i]['children'][j].text;
+                jsonData.push(data);
+                
+                for(let k=0; k < list[i]['children'][j]['children'].length; k++){
+                    let data = new Object();
+                    data.m_id = list[i]['children'][j]['children'][k].id;
+                    data.parent = list[i]['children'][j]['id'];
+                    data.parent_url = '소메뉴';
+                    data.menu_name = list[i]['children'][j]['children'][k].text;
+                    jsonData.push(data);
+                    // console.log(list[i]['children'][j]['children']);
+                }
+                // console.log(list[i]['children'][j]['children'].length);
+            }
+        }
+        
+        hiddenField.setAttribute("name", "menus")
+        hiddenField.setAttribute("value", JSON.stringify(jsonData))
+        
+        form.appendChild(hiddenField);        
+        form.submit();
+    }
+    
+    
+</script>
+{% endblock %}

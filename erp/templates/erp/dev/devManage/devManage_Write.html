@@ -1,0 +1,411 @@
+{% extends 'base/base.html' %} {% block content %} {% load static %}
+
+<!-- include summernote css/js -->
+<link
+    href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css"
+    rel="stylesheet"/>
+
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+
+
+<link
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.0.9/css/fileinput.min.css"
+    media="all"
+    rel="stylesheet"
+    type="text/css"
+/>
+<link
+    rel="stylesheet"
+    href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+    crossorigin="anonymous"
+/>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.0.9/js/plugins/piexif.min.js"
+    type="text/javascript"
+></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.0.9/js/plugins/sortable.min.js"
+    type="text/javascript"
+></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.0.9/js/fileinput.min.js"></script>
+
+
+
+
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css"
+/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+
+<style type="text/css">
+    a:visited {
+        color: black;
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    input[readonly] {background-color:white !important;}
+
+</style>
+
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom"
+    >
+        <h1 class="h4">{% if program.title %}[{{ program.title }}] 프로그램 수정{% else %}프로그램 등록{% endif %}</h1>
+    </div>
+    <div>
+        <form method="post" action="{% url 'devManage' %}{% if program %}/{{program.id}}{% endif %}" enctype="multipart/form-data">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-6">
+                <div class="col-lg-2">
+                    <label for="inputName">프로그램명</label>
+                    <div class="form-group">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="inputName"
+                            autocomplete="off"
+                            name="inputName"
+                            value = "{{ program.title }}"
+                            required
+                            autofocus
+                        />
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <label for="inputName">카테고리</label>
+                    <div class="form-group">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="inputCat"
+                            name="inputCat"
+                            data-toggle="modal"
+                            data-target="#category_select"
+                            placeholder="클릭하여 선택"
+                            autocomplete="off"
+                            value = "{{ program.category }}"
+                            required
+                            onkeypress="return false;"
+                        />
+                        <input
+                            type="hidden"
+                            class="form-control"
+                            value = "{{ program.parent_id }}"
+                            id="parent_id"
+                            name="parent_id"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-6">
+                    <label for="selectProgress">진행상태</label>
+                    <div class="form-group">
+                        <select class="form-control" id="selectProgress" name="selectProgress">
+                            <option value="기획완료" {%if program.progress == '기획완료'%} selected {% endif %}>기획완료</option>
+                            <option value="개발진행" {%if program.progress == '개발진행'%} selected {% endif %}>개발진행</option>
+                            <option value="개발완료" {%if program.progress == '개발완료'%} selected {% endif %}>개발완료</option>
+                            <option value="유지보수" {%if program.progress == '유지보수'%} selected {% endif %}>유지보수</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-md-6 col-lg-1">
+                    <label for="selectRating">등급</label>
+                    <div class="form-group">
+                        <select class="form-control" id="selectRating" name="selectRating">
+                            <option value="A" {%if program.progress == 'A'%} selected {% endif %}>A</option>
+                            <option value="B" {%if program.progress == 'B'%} selected {% endif %}>B</option>
+                            <option value="C" {%if program.progress == 'C'%} selected {% endif %}>C</option>
+                            <option value="D" {%if program.progress == 'D'%} selected {% endif %}>D</option>
+                            <option value="E" {%if program.progress == 'E'%} selected {% endif %}>E</option>
+                            <option value="F" {%if program.progress == 'F'%} selected {% endif %}>F</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-md-6 col-lg-2">
+                    <label for="inputURL">URL</label>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="inputURL" name="inputURL" value="{{ program.url }}" required/>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-md-6 col-lg-2" style="white-space: nowrap;">
+                    <label for="inputFile" style="width: 65px;">파일&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;메뉴얼</label><br />
+                    <a
+                        class="btn btn-sm btn-outline-secondary"
+                        data-toggle="collapse"
+                        href="#collapse"
+                        role="button"
+                        aria-expanded="false"
+                        aria-controls="collapse"
+                        style="height: 38px;"
+                    >
+                        <span data-feather="file"></span>
+                    </a>     
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a
+                        class="btn btn-sm btn-outline-secondary"
+                        role="button"
+                        style="height: 38px;"
+                        data-toggle="modal" 
+                        data-target="#manual_input"
+                    >
+                        <span data-feather="help-circle"></span>
+                    </a>
+                    
+                    
+                </div>
+            </div>
+            {% if program.title %}
+                {% if files %}
+                    {% for f in files %}
+                        <div class="file_{{f.file.id}}">
+                            <a onclick="file_delete(this, {{f.id}})">{{f.file.name}} <span data-feather="delete"></span></a>    
+                        </div>
+                    {% endfor %}
+                {%endif%}
+            {%endif%}
+            <div class="collapse" id="collapse">
+                <br />
+                <div class="card card-body" id="file_area">
+                    <!-- <input type="file" id="files" name="inputfile" multiple/> -->
+                    
+                    <input
+                        id="files"
+                        type="file"
+                        class="file"
+                        data-preview-file-type="text"
+                        name="inputfile"
+                        multiple
+                    />
+                </div>
+            </div>
+            <hr />
+            <textarea id="summernote" name="editordata">{{ program.content }}</textarea>
+            <input type="hidden" name="writer" id="writer" value="{{user}}"/>
+            <input type="hidden" name="file_delete_list" id="file_delete_list" value=""/>
+            <br />
+            <button type="submit" class="btn btn-outline-success btn-lg btn-block">등록</button>
+            {% include 'modal/manual_write.html' %}
+        </form>
+    </div>
+    {% include 'modal/category_select.html' %}
+    
+</main>
+<br />
+<script>
+    /* Init Icon */
+    feather.replace();
+    
+    var file_delete_list = [];
+    
+    function file_delete(target, id){
+        if(target.style.getPropertyValue("text-decoration") == ''){
+            target.style.setProperty("text-decoration", "line-through");
+            file_delete_list.push(id);
+        }else{
+            target.style.setProperty("text-decoration", '');
+            idx = file_delete_list.indexOf(id);
+            if (idx > -1) {
+              file_delete_list.splice(idx, 1);
+            }
+        }
+        document.getElementById("file_delete_list").value = file_delete_list;
+    }
+
+    $(document).ready(function () {
+        $('#summernote').summernote({
+            height: 300,
+            lang: 'ko-KR',
+            toolbar: [
+                // [groupName, [list of button]]
+                ['fontname', ['fontname']],
+                ['fontsize', ['fontsize']],
+                ['style', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+                ['color', ['forecolor', 'color']],
+                ['table', ['table']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['insert', ['picture', 'link', 'video']],
+                ['view', ['fullscreen', 'help']],
+            ],
+            fontNames: [
+                'Arial',
+                'Arial Black',
+                'Comic Sans MS',
+                'Courier New',
+                '맑은 고딕',
+                '궁서',
+                '굴림체',
+                '굴림',
+                '돋음체',
+                '바탕체',
+            ],
+            fontSizes: [
+                '8',
+                '9',
+                '10',
+                '11',
+                '12',
+                '14',
+                '16',
+                '18',
+                '20',
+                '22',
+                '24',
+                '28',
+                '30',
+                '36',
+                '50',
+                '72',
+            ],
+        });
+    });
+
+    function categoryChange(e) {
+        var dt = [
+            '기획발주',
+            '생산입고',
+            '출고지시',
+            '출고반품',
+            '판매관리',
+            '매출분석',
+            '상품분석',
+            '기초관리',
+        ];
+        var gw = ['공지사항', '메신저', '메일', '결재', '근태'];
+        var log = ['물류관리-미지원'];
+        var pos = ['매장포스-미지원'];
+        var dev = ['개발관리-미지원'];
+
+        var target = document.getElementById('selectTask');
+
+        if (e.value == '유통관리') var d = dt;
+        else if (e.value == '그룹웨어') var d = gw;
+        else if (e.value == '물류관리') var d = log;
+        else if (e.value == '매장포스') var d = pos;
+        else if (e.value == '개발관리') var d = dev;
+        else {
+            target.disabled = true;
+            target.options.length = 0;
+            return 0;
+        }
+
+        target.disabled = false;
+        target.options.length = 0;
+
+        for (x in d) {
+            var opt = document.createElement('option');
+            opt.value = d[x];
+            opt.innerHTML = d[x];
+            target.appendChild(opt);
+        }
+    }
+
+    var org_menus = [
+        {% for t in menus %}
+        {
+            "id": "{{ t.m_id }}",
+            "parent": "{% if t.parent == '#' %}{{ t.parent }}{% else %}{{ t.parent }}{% endif %}",
+            "text": "{{ t.menu_name }}"
+        },
+        {% endfor %}
+    ]
+
+    $('#jstree').jstree({
+          "core" : {
+            "animation" : 0,
+            "check_callback" : true,
+            "themes" : { "stripes" : true, 'icons': false  },
+            'data' : org_menus,
+              'multiple':false
+          },
+          "types" : {
+            "#" : {
+              "icon":"",
+              "max_children" : 1,
+              "max_depth" : 3,
+              "valid_children" : ["root"],
+            },
+            "root" : {
+              "icon" : "false",
+              "valid_children" : ["default"],
+              "delete" : false
+            },
+            "default" : {
+              "valid_children" : ["default","file"]
+            },
+            "file" : {
+              "icon" : "glyphicon glyphicon-file",
+              "valid_children" : []
+            }
+          },
+          "plugins" : [
+            "contextmenu", "dnd", "search",
+            "state", "types", "wholerow"
+          ]
+        });
+        $('#jstree').jstree().refresh();
+    
+    function select(){
+        var node_id = $("#jstree",).jstree().get_selected();
+        var child = $("#jstree").jstree().get_node( node_id ).children;
+        
+        if(node_id == false){
+            alert('카테고리를 선택해주세요.');
+            return
+        }
+        
+        if($("#jstree").jstree().get_parent(node_id) != '#'){//child.length == 0
+            $('#category_select').modal("hide");
+            
+            
+            var parent = $("#jstree").jstree().get_parent(node_id);
+            let alert_text = "";
+            
+            while($("#jstree").jstree().get_text(parent)){
+                alert_text = `${$("#jstree").jstree().get_text(parent)}>` + alert_text;
+                parent =  $("#jstree").jstree().get_parent(parent);
+            }
+            document.getElementById('inputCat').value = `${alert_text}${$("#jstree").jstree().get_text(node_id)}[${node_id}]`;
+            document.getElementById('parent_id').value = `${node_id}`;
+            document.getElementById('t-message').innerHTML = `<b>[${alert_text} ${$("#jstree").jstree().get_text(node_id)}]</b> 카테고리가 <br>선택되었습니다.`;
+            $('.toast').toast('show');
+        }else{
+            $("#jstree").jstree().deselect_node(node_id);
+            $("#jstree").jstree().select_node(child[0]);
+            document.getElementById('t-message').innerHTML = `[${$("#jstree").jstree().get_text(node_id)}]의 소메뉴를 선택해주세요.`;
+            $('.toast').toast('show');
+        }
+    }
+    
+    var to = false;
+      $('#myInput').keyup(function () {
+        if(to) { clearTimeout(to); }
+        to = setTimeout(function () {
+          var v = $('#myInput').val();
+          $('#jstree').jstree(true).search(v);
+        }, 250);
+      });
+    
+    var plData = ['기획',];
+        $('#the-basics .typeahead').typeahead({
+          hint: true,
+          highlight: true,
+          minLength: 1
+        },
+        {
+          name: 'plData',
+          source: substringMatcher(plData)
+        });
+
+</script>
+{% endblock %}

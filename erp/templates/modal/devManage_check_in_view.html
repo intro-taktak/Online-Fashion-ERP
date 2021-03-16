@@ -1,0 +1,59 @@
+<link
+    rel="stylesheet"
+    href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+    crossorigin="anonymous"
+/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+<div
+    class="modal fade"
+    id="check_in_view"
+    tabindex="-1"
+    aria-labelledby="check_in_Modal_Label"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="check_in_Modal_Label"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" >
+                <div class="alert alert-warning" role="alert">
+                    <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                          <th scope="col">유형</th>
+                          <th scope="col">제목</th>
+                          <th scope="col">작성일</th>
+                          <th scope="col">작성자</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td id='check_in_view_type'></td>
+                          <td id='check_in_view_title'></td>
+                          <td id='check_in_view_created_at'></td>
+                          <td id='check_in_view_writer'></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div id="check_in_badge_area">
+                        asdasda
+                    </div>
+                </div>
+                <div class="card card-body" id="check_in_body">
+                </div><br>
+                <h5>첨부파일 <span class="badge badge-pill badge-primary" id="check_in_file_count"></span></h5>
+                <div class="card card-body" id="check_in_file">
+                </div>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>

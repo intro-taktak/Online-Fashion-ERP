@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Scripts used on base page -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <link rel=" shortcut icon" href="{% static 'erp/img/sewon_mark_logo_1__1__DQK_icon.ico' %}">
+        <link rel="icon" href="{% static 'erp/img/sewon_mark_logo_1__1__DQK_icon.ico' %}">
+        <title>ewERP {{user.groups.all.0}}</title>
+        <!-- Bootstrap core CSS -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+            integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+            crossorigin="anonymous"
+        />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+            crossorigin="anonymous"
+        ></script>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@5.5.1/main.min.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.min.css"
+        />
+        <link rel="stylesheet" type="text/css" href="{% static 'erp/css/style.css' %}" />
+
+        <!-- Latest compiled and minified CSS -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css"
+        />
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+        <!-- Icons -->
+        <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+
+        <link
+            rel="stylesheet"
+            href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+            crossorigin="anonymous"
+        />
+        
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400&display=swap" rel="stylesheet">
+
+        <script src="{% static 'erp/js/typeahead.js' %}"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+            <a
+                class="navbar-brand col-sm-3 col-md-2 mr-0 text-center"
+                href="/"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+            >
+                <img src="{% static 'erp/img/SEWON_MARK-LOGO_1.png'%}" width="50px" />
+                <span class="px-2 dropdown-toggle" style="font-family: 'Noto Sans KR', sans-serif; font-size:110%">
+                    {% if menu == 'fashion' %}패션유통
+                    {% elif menu == 'general' %}일반유통
+                    {% elif menu == 'online' %}온라인유통
+                    {% elif menu == 'gw' %}그룹웨어
+                    {% elif menu == 'accounting' %}경리회계
+                    {% elif menu == 'shoppingmall' %}쇼핑몰
+                    {% elif menu == 'messenger' %}메신저
+                    {% elif menu == 'dev' %}개발관리
+                    {% else %}조직선택
+                    {% endif %}
+                    {{user.groups.all.0}}
+                </span>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="margin-left: 3.3%;">
+                <form id="logout" method="POST" action="{% url 'logout' %}">
+                    {% csrf_token %} <input type="hidden" />
+                </form>
+                <a class="dropdown-item" href="?menu={{menu}}"> <span data-feather="home"></span> 대시보드</a>
+                {% if user.is_authenticated %}
+                    <a class="dropdown-item" href="javascript:{document.getElementById('logout').submit()}"><span data-feather="log-out"></span> 로그아웃</a>
+                {% else %}
+                    <a class="dropdown-item" href="login"><span data-feather="log-in"></span> 로그인</a>
+                {% endif %}
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="?menu=fashion"> <span data-feather="tag"></span> 패션유통</a>
+                <a class="dropdown-item" href="?menu=general"> <span data-feather="tag"></span> 일반유통</a>
+                <a class="dropdown-item" href="?menu=online"> <span data-feather="tag"></span> 온라인유통</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="?menu=gw"><span data-feather="trello"></span> 그룹웨어 <span class="badge badge-info">6</span></a>
+                <a class="dropdown-item" href="?menu=accounting"><span data-feather="dollar-sign"></span> 경리회계 <span class="badge badge-success">0</span></a>
+                <a class="dropdown-item" href="?menu=shoppingmall"><span data-feather="shopping-cart"></span> 쇼핑몰 <span class="badge badge-success">0</span></a>
+                <a class="dropdown-item" href="?menu=messenger"><span data-feather="message-circle"></span> 메신저 <span class="badge badge-success">0</span></a>
+                
+                {% if user.groups.all.0.name == 'developer' %}
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="?menu=dev"><span data-feather="code"></span> 개발관리</a>
+                {% endif %}
+                
+                
+            </div>
+
+            <ul class="navbar-nav px-3 d-lg-none d-md-none">
+                <a class="nav-link d-lg-none d-md-none" href="#"
+                    ><span data-feather="menu" onclick="openNav()"></span
+                ></a>
+            </ul>
+
+            <!-- <ul class="navbar-nav px-3" display="inline-block">
+                <li class="nav-item text-nowrap">
+                    <h5>
+                        <span class="badge badge-pill badge-primary" style="margin-top: 9px;"
+                            >대시보드</span
+                        >
+                    </h5>
+                </li>
+            </ul> -->
+            <ul class="navbar-nav px-3" display="inline-block">
+                <li class="nav-item text-nowrap">
+                    <form class="search">
+                        <div class="search__wrapper">
+                            <div id="the-basics">
+                                <input
+                                    type="text"
+                                    name="search_text"
+                                    placeholder="프로그램 검색"
+                                    class="search__field typeahead tt-query"
+                                    autocomplete="off"
+                                    spellcheck="false"
+                                />
+                            </div>
+                            <button type="submit" class="fa fa-search search__icon"></button>
+                        </div>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+
+            {% include 'base/sidebar.html'%}
+            {% include 'base/mobileSidebar.html'%} 
+        {% include 'toast_message/basic_toast.html'%} 
+    </body>
+    <script>
+        /* Init Icon */
+            feather.replace()
+
+        /* Open the mobile sidenav */
+                function openNav() {
+                  document.getElementById("mySidenav").style.width = "100%";
+                }
+
+        /* Close the mobile sidenav */
+                function closeNav() {
+                  document.getElementById("mySidenav").style.width = "0";
+                }
+
+        /* Program search engine js 따로 분리할지 고민*/
+            var substringMatcher = function(strs) {
+          return function findMatches(q, cb) {
+            var matches, substringRegex;
+
+            // an array that will be populated with substring matches
+            matches = [];
+
+            // regex used to determine if a string contains the substring `q`
+            substrRegex = new RegExp(q, 'i');
+
+            // iterate through the pool of strings and for any string that
+            // contains the substring `q`, add it to the `matches` array
+            $.each(strs, function(i, str) {
+              if (substrRegex.test(str)) {
+                matches.push(str);
+              }
+            });
+
+            cb(matches);
+          };
+        };
+
+        /* 등록된 프로그램 자동 연동하여 검색어 추천 및 자동완성 지원 */
+
+        var plData = [{% for list in programs %}'{{list.title}}', {% endfor %}];
+
+        $('#the-basics .typeahead').typeahead({
+          hint: true,
+          highlight: true,
+          minLength: 1
+        },
+        {
+          name: 'plData',
+          source: substringMatcher(plData)
+        });
+        
+        function Search(){
+            this.keyword = document.querySelector('input[name = "search_text"]');
+        }
+        
+    </script>
+</html>
+{% block content %} 
+{% endblock %}

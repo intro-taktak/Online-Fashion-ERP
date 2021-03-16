@@ -1,0 +1,81 @@
+<div class="modal fade" id="manual_input" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{% if program.title %}[{{program.title}}] 메뉴얼 수정{% else %}메뉴얼 등록{% endif %}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <textarea id="summernote_modal_input" name="summernote_modal_input">
+              {{ program.manual }}
+          </textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="hide_modal()">{% if program.title %} 수정 {% else %} 입력 {% endif %}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#summernote_modal_input').summernote({
+            height: 300,
+            lang: 'ko-KR',
+            toolbar: [
+                // [groupName, [list of button]]
+                ['fontname', ['fontname']],
+                ['fontsize', ['fontsize']],
+                ['style', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+                ['color', ['forecolor', 'color']],
+                ['table', ['table']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['insert', ['picture', 'link', 'video']],
+                ['view', ['fullscreen', 'help']],
+            ],
+            fontNames: [
+                'Arial',
+                'Arial Black',
+                'Comic Sans MS',
+                'Courier New',
+                '맑은 고딕',
+                '궁서',
+                '굴림체',
+                '굴림',
+                '돋음체',
+                '바탕체',
+            ],
+            fontSizes: [
+                '8',
+                '9',
+                '10',
+                '11',
+                '12',
+                '14',
+                '16',
+                '18',
+                '20',
+                '22',
+                '24',
+                '28',
+                '30',
+                '36',
+                '50',
+                '72',
+            ],
+        });
+    });
+    
+    $('#manual_input').modal("hide");
+    
+    function refresh_modal(){
+        $('#summernote_modal_input').summernote('reset');
+    }
+    
+    function hide_modal(){
+        $('#manual_input').modal("hide");
+    }
+    
+</script>

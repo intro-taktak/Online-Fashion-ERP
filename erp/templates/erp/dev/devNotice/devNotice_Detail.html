@@ -1,0 +1,133 @@
+{% extends 'base/base.html' %} {% block content %}
+<style>
+    input[readonly] {background-color:white !important;}
+    .progress {
+        position:relative;
+    }
+    .progress span {
+        position:absolute;
+        left:0;
+        width:100%;
+        text-align:center;
+        z-index:2;
+        color:white;
+        margin-top: 7px;
+    }
+</style>
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom"
+    >
+        <h2 class="h5">
+            {{notice.title}}
+        </h2>
+        
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'devNotice_Update' id=notice.id %}?menu={{menu}}">
+                    <span data-feather="user-check"></span> 수정
+                </a>
+                <button class="btn btn-sm btn-outline-secondary" onclick="f_delete();">
+                    <span data-feather="edit"></span> 삭제
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="alert alert-warning" role="alert">
+      <table class="table table-borderless">
+      <thead>
+        <tr>
+          <th scope="col">등록일</th>
+          <th scope="col">작성자</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ notice.created_at | date }}</td>
+          <td>{{ notice.writer }}</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="card card-body" style="padding:5%;">
+        {{ notice.content | safe }}
+    </div>
+    {% if files %}
+    <br>
+        <h5>첨부파일 <span class="badge badge-pill badge-primary">{{files.count}}</span></h5>
+        <div class="card card-body">
+    {% for i in files %}
+            <a href="{{i.file.url}}"><b>{{ i.file.name }}</b> {{ i.file.size }} bytes</a>      
+    {% endfor %}
+            </div>
+    {% endif %}
+    <br>
+</main>
+<br />
+<br />
+<script>
+    /* Init Icon */
+    feather.replace();
+    
+    function f_delete() {
+        location.href="/devNotice/delete?pid={{notice.id}},";
+    }
+
+    function check_in_modal_open(id){
+        {% if check_ins %}
+            document.getElementById('check_in_file').innerHTML = ``;
+            document.getElementById('check_in_file_count').innerHTML = ``;
+         
+            let a_json = [
+                {% for i in check_in_files %}
+                {
+                    'p_id':'{{i.p_id}}',
+                    'url':'{{i.file.url}}',
+                    'name': '{{i.file.name}}'
+                }, 
+                {% endfor %}        
+            ];
+
+            var check_ins = [
+                {% for j in check_ins %}
+                {
+                    'id': '{{j.id}}',
+                    'title': `{{j.title}}`,
+                    'writer': '{{j.writer}}',
+                    'content': `
+                                    {{j.content | safe }}
+                                `,
+                    'created_at': '{{j.created_at}}',
+                    'progress': '{{j.progress}}',
+                    'tag': '{{j.tag}}',
+                },
+                {% endfor %}
+            ];
+         
+            for(let i=0; i<a_json.length; i++){
+                if(a_json[i]['p_id'] == id){
+                    document.getElementById('check_in_file').innerHTML += `<a href='${a_json[i]['url']}'>${a_json[i]['name']}</a>`;
+                    document.getElementById('check_in_file_count').innerHTML = i+1;
+                }
+            }
+        {% endif %}
+         
+        for(let k=0; k<check_ins.length; k++){
+            if(check_ins[k].id == id){
+                document.getElementById('check_in_Modal_Label').innerHTML = check_ins[k].title;
+                document.getElementById('check_in_badge_area').innerHTML = document.getElementById('badge_area').innerHTML;;
+                document.getElementById('check_in_body').innerHTML = check_ins[k].content;;
+                document.getElementById('check_in_view_type').innerHTML = check_ins[k].progress;;
+                document.getElementById('check_in_view_title').innerHTML = check_ins[k].title;;
+                document.getElementById('check_in_view_created_at').innerHTML = check_ins[k].created_at;;
+                document.getElementById('check_in_view_writer').innerHTML = check_ins[k].writer;;
+        
+            }
+        }
+        
+        
+    }
+
+</script>
+{% endblock %}

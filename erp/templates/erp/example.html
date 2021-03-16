@@ -1,0 +1,60 @@
+{% extends 'base/base.html' %}
+{% block content %}
+{% load static %}
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h4">{{program.title}}(ex)</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                {% if user.groups.all.0.name == 'developer' %}
+                <a
+                    class="btn btn-sm btn-outline-secondary"
+                    href="devManage/post/{{program.id}}/?menu={{menu}}"
+                >
+                    <span data-feather="plus-circle"></span> 개발이력
+                </a>
+                {% endif %}
+                <a
+                    class="btn btn-sm btn-outline-secondary"
+                    href="devManage/write?menu={{menu}}"
+                    data-toggle="modal" 
+                    data-target="#manual_view"
+                >
+                    <i class="fas fa-book"></i> 메뉴얼
+                </a>
+                <a
+                    class="btn btn-sm btn-outline-secondary"
+                    href="devManage/menu={{menu}}"
+                >
+                    <span data-feather="plus-circle"></span> 등록
+                </a>
+                <button
+                    class="btn btn-sm btn-outline-secondary"
+                    onclick=""
+                >
+                    <span data-feather="minus-circle"></span> 삭제
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <input class="form-control" id="myInput" type="text" placeholder="Search.." />
+    <br />
+    
+    <img src="{% static 'erp/img/example.png' %}" style="width:100%"/>
+    {% include 'modal/manual_view.html' %}
+</main>
+<br>
+<script>
+    /* Init Icon */   
+    feather.replace();
+    
+    /* Type Search */ 
+    $('#myInput').on('keyup', function () {
+        var value = $(this).val().toLowerCase();
+        $('#myTable tr').filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+    });
+</script>
+{% endblock %}

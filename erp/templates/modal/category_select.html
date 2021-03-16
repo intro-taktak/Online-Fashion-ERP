@@ -1,0 +1,29 @@
+<div
+        class="modal fade"
+        id="category_select"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+    >
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">프로그램 카테고리 선택</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input class="form-control typeahead" id="myInput" type="text" placeholder="Search.." autocomplete="off"/>
+                <br />
+                <div id="jstree"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    종료
+                </button>
+                <button type="button" class="btn btn-primary" onclick="select()">확인</button>
+            </div>
+        </div>
+    </div>
+</div>

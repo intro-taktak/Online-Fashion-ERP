@@ -1,0 +1,79 @@
+<!-- Mobile sidebar -->
+<div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <ul class="nav flex-column">
+        {% if menus %}
+        {% for i in menus %} 
+            {% if i.parent_url == menu %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#c1{{i.id}}" data-toggle="collapse" aria-expanded="false">
+                        <i class="bi-{{i.icon}}"></i>
+                            {{ i.menu_name }}
+                        <span class="sr-only"></span>
+                    </a>
+                    <ul class="collapse list-unstyled" id="c1{{i.id}}">
+                        {% for j in menus %} 
+                            {% if i.m_id == j.parent %}
+                                <li style="margin-left: 25px;">
+                                    <a
+                                        class="nav-link small_menu"
+                                        href="#c2{{j.id}}"
+                                        data-toggle="collapse"
+                                        aria-expanded="false"
+                                    >
+                                        <span data-feather="chevron-down"> </span>
+                                        {{ j.menu_name }}
+                                    </a>
+                                    <ul class="collapse list-unstyled" id="c2{{j.id}}">
+                                        {% for k in programs %}
+                                            {% if k.parent_id == j.m_id %}
+                                                <li style="margin-left: 25px;">
+                                                    <a class="nav-link small_menu" href="/{{k.url}}">
+                                                        <span data-feather="settings"> </span>{{k.title}}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if programs %}
+                        {% for r in programs %}
+                            {% if r.parent_id == i.m_id %}
+                                <li style="margin-left: 25px;">
+                                    <a class="nav-link small_menu" href="/{{k.url}}">
+                                        <span data-feather="settings"> </span>{{r.title}}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    </ul>
+                </li>
+            {% endif %} 
+        {% endfor %}
+        {% if menu == 'dev' %}
+                <li class="nav-item">
+                    <a
+                        class="nav-link"
+                        href="/devMenu?menu={{menu}}"
+                    >
+                        <span data-feather="menu"></span>
+                        메뉴관리 <span class="sr-only"></span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a
+                        class="nav-link"
+                        href="/devManage?menu={{menu}}"
+                    >
+                        <span data-feather="codesandbox"></span>
+                        프로그램관리 <span class="sr-only"></span>
+                    </a>
+                </li>   
+            {% endif %}
+            {% endif %}
+        </ul>
+</div>
